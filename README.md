@@ -8,6 +8,12 @@ npm install
 grunt
 ```
 
+## Development
+- `grunt` - Watch and compile SCSS files
+- `npm run storybook` - Run Storybook for component development
+- `npm run stylelint` - Lint SCSS files
+- `npm run jest` - Run tests
+
 ## Release
 To create a new release for [WordPress.org](https://wordpress.org/themes/upload/):
 

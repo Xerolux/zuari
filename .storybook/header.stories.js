@@ -1,4 +1,7 @@
-export default { title: 'Header' };
+export default {
+  title: 'Header',
+  tags: ['autodocs'],
+};
 
 export const full = () => `<header role="banner" class="header" style="background-image: url()">
 		<div class="header__container">

@@ -1,9 +1,24 @@
 {
   "extends": [
-    "stylelint-config-wordpress",
-    "stylelint-config-wordpress/scss"
+    "stylelint-config-standard-scss"
   ],
   "rules": {
-    "indentation": 2
+    "indentation": null,
+    "selector-class-pattern": null,
+    "declaration-empty-line-before": null,
+    "scss/double-slash-comment-whitespace-inside": null,
+    "scss/double-slash-comment-empty-line-before": null,
+    "at-rule-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "media-feature-range-notation": null,
+    "shorthand-property-no-redundant-values": null,
+    "color-hex-length": null,
+    "color-function-notation": null,
+    "alpha-value-notation": null,
+    "selector-pseudo-element-colon-notation": null,
+    "no-descending-specificity": null,
+    "no-invalid-position-at-import-rule": null,
+    "declaration-block-no-duplicate-properties": null,
+    "comment-empty-line-before": null
   }
 }
