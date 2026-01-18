@@ -232,3 +232,18 @@ require get_template_directory() . '/inc/customizer.php';
 if ( defined( 'JETPACK__VERSION' ) ) {
 	require get_template_directory() . '/inc/jetpack.php';
 }
+
+/**
+ * Load dark mode functionality.
+ */
+require get_template_directory() . '/inc/dark-mode.php';
+
+/**
+ * Load block patterns.
+ */
+require get_template_directory() . '/inc/block-patterns.php';
+
+/**
+ * Load SEO enhancements.
+ */
+require get_template_directory() . '/inc/seo.php';

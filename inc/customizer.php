@@ -62,6 +62,14 @@ function zuari_customize_register( $wp_customize ) {
 		)
 	);
 
+	$wp_customize->add_section(
+		'dark_mode',
+		array(
+			'title'    => __( 'Dark Mode', 'zuari' ),
+			'priority' => 40,
+		)
+	);
+
 	$wp_customize->add_setting(
 		'enable_darkmode',
 		array(
@@ -71,14 +79,144 @@ function zuari_customize_register( $wp_customize ) {
 	);
 
 	$wp_customize->add_control(
-		new WP_CUstomize_Control(
+		new WP_Customize_Control(
 			$wp_customize,
 			'enable_darkmode',
 			array(
-				'label'    => __( 'Allow the operating system\'s dark mode to override my color settings.', 'zuari' ),
-				'section'  => 'colors',
+				'label'    => __( 'Enable dark mode', 'zuari' ),
+				'section'  => 'dark_mode',
 				'settings' => 'enable_darkmode',
 				'type'     => 'checkbox',
+			)
+		)
+	);
+
+	$wp_customize->add_setting(
+		'dark_mode_background',
+		array(
+			'default'           => '#222222',
+			'sanitize_callback' => 'sanitize_hex_color',
+		)
+	);
+
+	$wp_customize->add_control(
+		new WP_Customize_Color_Control(
+			$wp_customize,
+			'dark_mode_background',
+			array(
+				'label'    => __( 'Dark mode background', 'zuari' ),
+				'section'  => 'dark_mode',
+				'settings' => 'dark_mode_background',
+			)
+		)
+	);
+
+	$wp_customize->add_setting(
+		'dark_mode_text',
+		array(
+			'default'           => '#bdc3c7',
+			'sanitize_callback' => 'sanitize_hex_color',
+		)
+	);
+
+	$wp_customize->add_control(
+		new WP_Customize_Color_Control(
+			$wp_customize,
+			'dark_mode_text',
+			array(
+				'label'    => __( 'Dark mode text color', 'zuari' ),
+				'section'  => 'dark_mode',
+				'settings' => 'dark_mode_text',
+			)
+		)
+	);
+
+	// Spacing.
+	$wp_customize->add_section(
+		'spacing',
+		array(
+			'title'    => __( 'Spacing', 'zuari' ),
+			'priority' => 85,
+		)
+	);
+
+	$wp_customize->add_setting(
+		'content_width',
+		array(
+			'default'           => '680',
+			'sanitize_callback' => 'absint',
+		)
+	);
+
+	$wp_customize->add_control(
+		new WP_Customize_Control(
+			$wp_customize,
+			'content_width',
+			array(
+				'type'        => 'number',
+				'label'       => __( 'Content Width (px)', 'zuari' ),
+				'description' => __( 'Maximum width of the main content area.', 'zuari' ),
+				'section'     => 'spacing',
+				'settings'    => 'content_width',
+				'input_attrs' => array(
+					'min'  => 400,
+					'max'  => 1200,
+					'step' => 10,
+				),
+			)
+		)
+	);
+
+	$wp_customize->add_setting(
+		'line_height',
+		array(
+			'default'           => '1.6',
+			'sanitize_callback' => 'zuari_sanitize_float',
+		)
+	);
+
+	$wp_customize->add_control(
+		new WP_Customize_Control(
+			$wp_customize,
+			'line_height',
+			array(
+				'type'        => 'number',
+				'label'       => __( 'Line Height', 'zuari' ),
+				'description' => __( 'Line height for body text.', 'zuari' ),
+				'section'     => 'spacing',
+				'settings'    => 'line_height',
+				'input_attrs' => array(
+					'min'  => 1.0,
+					'max'  => 2.5,
+					'step' => 0.1,
+				),
+			)
+		)
+	);
+
+	$wp_customize->add_setting(
+		'font_size_base',
+		array(
+			'default'           => '18',
+			'sanitize_callback' => 'absint',
+		)
+	);
+
+	$wp_customize->add_control(
+		new WP_Customize_Control(
+			$wp_customize,
+			'font_size_base',
+			array(
+				'type'        => 'number',
+				'label'       => __( 'Base Font Size (px)', 'zuari' ),
+				'description' => __( 'Base font size for body text.', 'zuari' ),
+				'section'     => 'spacing',
+				'settings'    => 'font_size_base',
+				'input_attrs' => array(
+					'min'  => 14,
+					'max'  => 24,
+					'step' => 1,
+				),
 			)
 		)
 	);
@@ -274,16 +412,24 @@ add_action( 'wp_head', 'zuari_fgcolor_css' );
  */
 function zuari_dark_mode() {
 	if ( get_theme_mod( 'enable_darkmode' ) === '1' ) {
+		$dark_bg = get_theme_mod( 'dark_mode_background', '#222222' );
+		$dark_text = get_theme_mod( 'dark_mode_text', '#bdc3c7' );
 		?>
 			<style media="screen">
+			:root.dark-mode,
 			@media (prefers-color-scheme: dark) {
-				:root {
-					--bg-color: #222;
-					--fg-color: #bdc3c7;
+				:root:not(.light-mode) {
+					--bg-color: <?php echo esc_attr( $dark_bg ); ?>;
+					--fg-color: <?php echo esc_attr( $dark_text ); ?>;
+					--header-bg: <?php echo esc_attr( adjust_brightness( $dark_bg, 10 ) ); ?>;
 				}
 
 				body.custom-background {
 					background-color: var(--bg-color) !important;
+				}
+
+				.header {
+					background-color: var(--header-bg) !important;
 				}
 			}
 			</style>
@@ -291,6 +437,29 @@ function zuari_dark_mode() {
 	}
 }
 add_action( 'wp_head', 'zuari_dark_mode' );
+
+/**
+ * Adjust color brightness for dark mode variations
+ */
+function adjust_brightness( $hex, $steps ) {
+	$steps = max( -255, min( 255, $steps ) );
+	$hex = str_replace( '#', '', $hex );
+
+	if ( strlen( $hex ) === 3 ) {
+		$hex = str_repeat( substr( $hex, 0, 1 ), 2 ) .
+		       str_repeat( substr( $hex, 1, 1 ), 2 ) .
+		       str_repeat( substr( $hex, 2, 1 ), 2 );
+	}
+
+	$parts = str_split( $hex, 2 );
+	$color = array_map( 'hexdec', $parts );
+
+	foreach ( $color as &$c ) {
+		$c = max( 0, min( 255, $c + $steps ) );
+	}
+
+	return '#' . sprintf( '%02x%02x%02x', $color[0], $color[1], $color[2] );
+}
 
 /**
  * Takes the input value and turns it into something we can use reliably.
@@ -304,6 +473,39 @@ function zuari_sanitize_enable_darkmode( $input ) {
 	}
 	return '';
 }
+
+function zuari_sanitize_float( $input ) {
+	return filter_var( $input, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
+}
+
+/**
+ * Render the spacing settings
+ */
+function zuari_spacing_settings() {
+	$content_width = get_theme_mod( 'content_width', 680 );
+	$line_height = get_theme_mod( 'line_height', 1.6 );
+	$font_size_base = get_theme_mod( 'font_size_base', 18 );
+
+	?>
+	<style media="screen">
+		:root {
+			--content-width: <?php echo esc_attr( $content_width ); ?>px;
+			--line-height: <?php echo esc_attr( $line_height ); ?>;
+			--font-size-base: <?php echo esc_attr( $font_size_base ); ?>px;
+		}
+		.site-content {
+			max-width: var(--content-width);
+			margin: 0 auto;
+			padding: 0 20px;
+		}
+		body {
+			line-height: var(--line-height);
+			font-size: var(--font-size-base);
+		}
+	</style>
+	<?php
+}
+add_action( 'wp_head', 'zuari_spacing_settings' );
 
 /**
  * Render the selected fonts

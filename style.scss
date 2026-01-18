@@ -4,13 +4,13 @@ Theme URI: https://github.com/prtksxna/zuari
 Author: Prateek Saxena
 Author URI: http://prtksxna.com
 Description: A stream of your life
-Version: 2.1.0
-Tested up to: 5.5.1
-Requires PHP: 5.6
+Version: 2.2.0
+Tested up to: 6.5
+Requires PHP: 7.4
 License: GNU General Public License v2 or later
 License URI: LICENSE
 Text Domain: zuari
-Tags: blog, one-column, custom-background, custom-colors, custom-header, custom-logo, custom-menu, featured-images, flexible-header, footer-widgets, sticky-post, theme-options, translation-ready, block-styles, wide-blocks, editor-style, portfolio
+Tags: blog, one-column, custom-background, custom-colors, custom-header, custom-logo, custom-menu, featured-images, flexible-header, footer-widgets, sticky-post, theme-options, translation-ready, block-styles, wide-blocks, editor-style, portfolio, block-patterns, dark-mode, accessibility-ready
 GitHub Theme URI: prtksxna/zuari
 
 This theme, like WordPress, is licensed under the GPL.
@@ -33,3 +33,4 @@ Underscores is distributed under the terms of the GNU GPL v2 or later.
 @import "template-parts/portfolio";
 @import "a11y";
 @import "codemirror";
+@import "responsive";
